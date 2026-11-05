@@ -1,6 +1,6 @@
-# CourseControl YAML → SQLite POC
+# cc YAML → SQLite POC
 
-CourseControl reads a complete YAML document into memory and synchronizes the
+cc reads a complete YAML document into memory and synchronizes the
 resulting object graph with SQLite using one SQLAlchemy `Session.merge()` call.
 The YAML file is the source of truth.
 
@@ -70,7 +70,7 @@ python app.py example.yaml
 The database path is configured through an environment variable:
 
 ```bash
-export COURSECONTROL_DATABASE=data.sqlite
+export cc_DATABASE=data.sqlite
 python app.py example.yaml
 ```
 
@@ -95,7 +95,7 @@ course, and the `s002` enrollment. Because the relationships use
 ## Project structure
 
 ```text
-python/CourseControl/
+python/cc/
 ├── domain/       # domain dataclasses
 ├── persistence/  # SQLAlchemy models and merge operation
 └── service/      # YAML loading and application workflow

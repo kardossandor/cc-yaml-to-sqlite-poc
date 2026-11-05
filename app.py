@@ -1,4 +1,4 @@
-from python.CourseControl.cli import main
+from python.cc.cli import main
 
 
 if __name__ == "__main__":
