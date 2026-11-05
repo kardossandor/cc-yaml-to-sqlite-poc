@@ -9,7 +9,7 @@ resulting object graph with SQLite. The YAML file is the source of truth.
 flowchart LR
     YAML[YAML file] --> Service[Service layer\nload_yaml + sync_yaml]
     Service --> Domain[Domain layer\ndataclasses]
-    Domain --> Persistence[Persistence layer\nto_orm_graph]
+    Domain --> Persistence[Persistence layer\n_sync_entities]
     Persistence --> Upsert[upsert complete source graph]
     Upsert --> SQLite[(SQLite database)]
 ```
@@ -26,25 +26,30 @@ erDiagram
 
     CATALOG {
         int id PK
+        datetime deleted_at
     }
     SUBJECT {
         string id PK
         int catalog_id FK
         string name
+        datetime deleted_at
     }
     COURSE {
         string id PK
         string subject_id FK
         string name
+        datetime deleted_at
     }
     STUDENT {
         string id PK
         int catalog_id FK
         string name
+        datetime deleted_at
     }
     ENROLLMENT {
         string course_id PK, FK
         string student_id PK, FK
+        datetime deleted_at
     }
 ```
 
@@ -100,8 +105,9 @@ python app.py example-delete.yaml
 `example-add.yaml` adds the `linear-algebra` course and the `s003` student.
 
 `example-delete.yaml` omits the `programming` subject, the `python-basics`
-course, and the `s002` enrollment. Missing objects are retained and marked with
-the synchronization timestamp in their `deleted_at` column.
+course, the `s002` and `s003` students, and their enrollments. Missing objects
+are retained and marked with the synchronization timestamp in their `deleted_at`
+column.
 
 ## Project structure
 
