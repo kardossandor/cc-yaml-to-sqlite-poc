@@ -5,6 +5,8 @@ from pathlib import Path
 from .config import DATABASE_PATH, LOG_DESTINATION, LOG_FILE
 from .service.sync import sync_yaml
 
+logger = logging.getLogger(__name__)
+
 
 def main() -> None:
     # Keep command-line parsing separate from the synchronization workflow.
@@ -21,4 +23,4 @@ def main() -> None:
     parser.add_argument("yaml_file", type=Path)
     args = parser.parse_args()
     sync_yaml(args.yaml_file, DATABASE_PATH)
-    logging.info("Synchronized %s -> %s", args.yaml_file, DATABASE_PATH)
+    logger.info("Synchronized %s -> %s", args.yaml_file, DATABASE_PATH)

@@ -1,6 +1,6 @@
 import logging
 
-from sqlalchemy import create_engine, event
+from sqlalchemy import create_engine, event, select
 from sqlalchemy.orm import Session
 
 from ..domain.models import Catalog as DomainCatalog
@@ -44,10 +44,27 @@ def to_orm_graph(data: DomainCatalog) -> Catalog:
     return Catalog(id=1, subjects=subjects, students=list(students.values()))
 
 
+def _delete_missing_students(session: Session, data: DomainCatalog) -> None:
+    expected_ids = {
+        student.id
+        for subject in data.subjects
+        for course in subject.courses
+        for student in course.students
+    }
+    students = session.scalars(select(Student).where(Student.catalog_id == 1)).all()
+    for student in students:
+        if student.id not in expected_ids:
+            session.delete(student)
+
+
 def sync(data: DomainCatalog, database: str) -> None:
     # Merge the complete graph so omitted YAML objects are removed by orphan cascades.
     engine = create_engine(f"sqlite:///{database}")
-    Base.metadata.create_all(engine)
-    with Session(engine) as session:
-        session.merge(to_orm_graph(data))
-        session.commit()
+    try:
+        Base.metadata.create_all(engine)
+        with Session(engine) as session:
+            session.merge(to_orm_graph(data))
+            _delete_missing_students(session, data)
+            session.commit()
+    finally:
+        engine.dispose()

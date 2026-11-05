@@ -58,7 +58,7 @@ class Student(Base):
     name: Mapped[str] = mapped_column(String)
     catalog: Mapped[Catalog] = relationship(back_populates="students")
     enrollments: Mapped[list[Enrollment]] = relationship(
-        back_populates="student"
+        cascade="all", back_populates="student"
     )
     courses = association_proxy("enrollments", "course")
 
