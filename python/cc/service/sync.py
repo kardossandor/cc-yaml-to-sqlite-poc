@@ -1,3 +1,4 @@
+import logging
 from pathlib import Path
 
 import yaml
@@ -30,4 +31,5 @@ def load_yaml(path: Path) -> Catalog:
 
 def sync_yaml(yaml_file: Path, database: str) -> None:
     # Convert the complete source document before handing it to persistence.
+    logging.info("Synchronizing %s -> %s", yaml_file, database)
     sync(load_yaml(yaml_file), database)

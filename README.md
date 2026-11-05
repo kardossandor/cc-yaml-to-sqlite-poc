@@ -76,6 +76,16 @@ python app.py example.yaml
 
 If the variable is not set, `data.sqlite` is used.
 
+Logging is configured with environment variables:
+
+```bash
+export CC_LOG_DESTINATION=file
+export CC_LOG_FILE=course-control.log
+python app.py example.yaml
+```
+
+`CC_LOG_DESTINATION` accepts `file` (the default) or `console`.
+
 ## Demonstrating additions and deletions
 
 Each YAML file describes a complete state. Run the files in this order:
