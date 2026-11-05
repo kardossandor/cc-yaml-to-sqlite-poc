@@ -1,0 +1,24 @@
+subjects:
+  - id: math
+    name: Matematika
+    courses:
+      - id: calculus-1
+        name: Analízis I.
+        students:
+          - id: s001
+            name: Kovács Anna
+          - id: s002
+            name: Nagy Béla
+      - id: linear-algebra
+        name: Lineáris algebra
+        students:
+          - id: s003
+            name: Tóth Csilla
+  - id: programming
+    name: Programozás
+    courses:
+      - id: python-basics
+        name: Python alapok
+        students:
+          - id: s001
+            name: Kovács Anna

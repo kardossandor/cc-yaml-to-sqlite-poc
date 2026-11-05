@@ -1,0 +1,31 @@
+from pathlib import Path
+
+import yaml
+
+from ..domain.models import Catalog, Course, Student, Subject
+from ..persistence.sync import sync
+
+
+def load_yaml(path: Path) -> Catalog:
+    raw = yaml.safe_load(path.read_text()) or {}
+    return Catalog(
+        subjects=[
+            Subject(
+                id=subject["id"],
+                name=subject["name"],
+                courses=[
+                    Course(
+                        id=course["id"],
+                        name=course["name"],
+                        students=[Student(**student) for student in course.get("students", [])],
+                    )
+                    for course in subject.get("courses", [])
+                ],
+            )
+            for subject in raw.get("subjects", [])
+        ]
+    )
+
+
+def sync_yaml(yaml_file: Path, database: str) -> None:
+    sync(load_yaml(yaml_file), database)

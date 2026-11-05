@@ -1,0 +1,9 @@
+subjects:
+  - id: math
+    name: Matematika
+    courses:
+      - id: calculus-1
+        name: Analízis I.
+        students:
+          - id: s001
+            name: Kovács Anna
