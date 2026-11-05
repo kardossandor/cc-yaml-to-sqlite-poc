@@ -6,12 +6,14 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 
 class Base(DeclarativeBase):
+    # Shared declarative base for all database models.
     pass
 
 
 class Catalog(Base):
     __tablename__ = "catalogs"
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    # Subjects and students belong to the single catalog root.
     subjects: Mapped[list[Subject]] = relationship(
         cascade="all, delete-orphan", back_populates="catalog"
     )
@@ -40,6 +42,7 @@ class Course(Base):
     enrollments: Mapped[list[Enrollment]] = relationship(
         cascade="all, delete-orphan", back_populates="course"
     )
+    # Expose related students without duplicating the many-to-many mapping.
     students = association_proxy("enrollments", "student")
 
 
@@ -59,5 +62,6 @@ class Enrollment(Base):
     __tablename__ = "enrollments"
     course_id: Mapped[str] = mapped_column(ForeignKey("courses.id"), primary_key=True)
     student_id: Mapped[str] = mapped_column(ForeignKey("students.id"), primary_key=True)
+    # The composite key prevents the same student-course link from being stored twice.
     course: Mapped[Course] = relationship(back_populates="enrollments")
     student: Mapped[Student] = relationship(back_populates="enrollments")

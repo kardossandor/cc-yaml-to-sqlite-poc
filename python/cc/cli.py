@@ -6,6 +6,7 @@ from .service.sync import sync_yaml
 
 
 def main() -> None:
+    # Keep command-line parsing separate from the synchronization workflow.
     parser = argparse.ArgumentParser(description="Synchronize YAML into SQLite.")
     parser.add_argument("yaml_file", type=Path)
     args = parser.parse_args()

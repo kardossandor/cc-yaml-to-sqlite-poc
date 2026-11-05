@@ -3,6 +3,7 @@ from dataclasses import dataclass
 
 @dataclass
 class Student:
+    # A student can be enrolled in multiple courses within the catalog.
     id: str
     name: str
 
@@ -11,6 +12,7 @@ class Student:
 class Course:
     id: str
     name: str
+    # Enrollments are kept on the course side in the input graph.
     students: list[Student]
 
 
@@ -23,4 +25,5 @@ class Subject:
 
 @dataclass
 class Catalog:
+    # The domain model mirrors the hierarchy represented by the YAML document.
     subjects: list[Subject]

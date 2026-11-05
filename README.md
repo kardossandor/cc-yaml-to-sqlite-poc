@@ -1,6 +1,6 @@
-# cc YAML → SQLite POC
+# CC YAML → SQLite POC
 
-cc reads a complete YAML document into memory and synchronizes the
+CC YAML → SQLite POC reads a complete YAML document into memory and synchronizes the
 resulting object graph with SQLite using one SQLAlchemy `Session.merge()` call.
 The YAML file is the source of truth.
 
@@ -70,7 +70,7 @@ python app.py example.yaml
 The database path is configured through an environment variable:
 
 ```bash
-export cc_DATABASE=data.sqlite
+export CC_DATABASE=data.sqlite
 python app.py example.yaml
 ```
 

@@ -7,6 +7,7 @@ from ..persistence.sync import sync
 
 
 def load_yaml(path: Path) -> Catalog:
+    # Treat a missing YAML body as an empty catalog.
     raw = yaml.safe_load(path.read_text()) or {}
     return Catalog(
         subjects=[
@@ -28,4 +29,5 @@ def load_yaml(path: Path) -> Catalog:
 
 
 def sync_yaml(yaml_file: Path, database: str) -> None:
+    # Convert the complete source document before handing it to persistence.
     sync(load_yaml(yaml_file), database)

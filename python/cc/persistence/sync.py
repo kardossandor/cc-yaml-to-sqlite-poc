@@ -6,6 +6,7 @@ from .models import Base, Catalog, Course, Enrollment, Student, Subject
 
 
 def to_orm_graph(data: DomainCatalog) -> Catalog:
+    # Reuse one ORM student object for every occurrence of the same student ID.
     students: dict[str, Student] = {}
     subjects: list[Subject] = []
 
@@ -30,6 +31,7 @@ def to_orm_graph(data: DomainCatalog) -> Catalog:
 
 
 def sync(data: DomainCatalog, database: str) -> None:
+    # Merge the complete graph so omitted YAML objects are removed by orphan cascades.
     engine = create_engine(f"sqlite:///{database}")
     Base.metadata.create_all(engine)
     with Session(engine) as session:
