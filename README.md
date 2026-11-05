@@ -1,8 +1,7 @@
 # CC YAML → SQLite POC
 
 CC YAML → SQLite POC reads a complete YAML document into memory and synchronizes the
-resulting object graph with SQLite using one SQLAlchemy `Session.merge()` call.
-The YAML file is the source of truth.
+resulting object graph with SQLite. The YAML file is the source of truth.
 
 ## Architecture
 
@@ -11,8 +10,8 @@ flowchart LR
     YAML[YAML file] --> Service[Service layer\nload_yaml + sync_yaml]
     Service --> Domain[Domain layer\ndataclasses]
     Domain --> Persistence[Persistence layer\nto_orm_graph]
-    Persistence --> Merge[session.merge\ncomplete ORM graph]
-    Merge --> SQLite[(SQLite database)]
+    Persistence --> Upsert[upsert complete source graph]
+    Upsert --> SQLite[(SQLite database)]
 ```
 
 ## Object and database relationships
@@ -48,6 +47,8 @@ erDiagram
         string student_id PK, FK
     }
 ```
+
+Every table also has a nullable `deleted_at` column for soft-deleted records.
 
 The relationship graph is navigable in both directions:
 
@@ -99,15 +100,15 @@ python app.py example-delete.yaml
 `example-add.yaml` adds the `linear-algebra` course and the `s003` student.
 
 `example-delete.yaml` omits the `programming` subject, the `python-basics`
-course, and the `s002` enrollment. Because the relationships use
-`all, delete-orphan`, missing objects are hard-deleted from SQLite.
+course, and the `s002` enrollment. Missing objects are retained and marked with
+the synchronization timestamp in their `deleted_at` column.
 
 ## Project structure
 
 ```text
 python/cc/
 ├── domain/       # domain dataclasses
-├── persistence/  # SQLAlchemy models and merge operation
+├── persistence/  # SQLAlchemy models and synchronization
 └── service/      # YAML loading and application workflow
 ```
 

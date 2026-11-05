@@ -1,12 +1,19 @@
 from __future__ import annotations
 
-from sqlalchemy import ForeignKey, Integer, String, inspect
+from datetime import datetime
+from typing import Optional
+
+from sqlalchemy import DateTime, ForeignKey, Integer, String, inspect
 from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 
 class Base(DeclarativeBase):
     # Shared declarative base for all database models.
+    deleted_at: Mapped[Optional[datetime]] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+
     def __str__(self) -> str:
         state = inspect(self)
         identity = state.identity or tuple(
@@ -20,10 +27,10 @@ class Catalog(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     # Subjects and students belong to the single catalog root.
     subjects: Mapped[list[Subject]] = relationship(
-        cascade="all, delete-orphan", back_populates="catalog"
+        cascade="all", back_populates="catalog"
     )
     students: Mapped[list[Student]] = relationship(
-        cascade="all, delete-orphan", back_populates="catalog"
+        cascade="all", back_populates="catalog"
     )
 
 
@@ -34,7 +41,7 @@ class Subject(Base):
     name: Mapped[str] = mapped_column(String)
     catalog: Mapped[Catalog] = relationship(back_populates="subjects")
     courses: Mapped[list[Course]] = relationship(
-        cascade="all, delete-orphan", back_populates="subject"
+        cascade="all", back_populates="subject"
     )
 
 
@@ -45,7 +52,7 @@ class Course(Base):
     name: Mapped[str] = mapped_column(String)
     subject: Mapped[Subject] = relationship(back_populates="courses")
     enrollments: Mapped[list[Enrollment]] = relationship(
-        cascade="all, delete-orphan", back_populates="course"
+        cascade="all", back_populates="course"
     )
     # Expose related students without duplicating the many-to-many mapping.
     students = association_proxy("enrollments", "student")
