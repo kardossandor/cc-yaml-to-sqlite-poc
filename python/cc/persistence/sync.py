@@ -1,6 +1,6 @@
 import logging
 
-from sqlalchemy import create_engine, event, inspect
+from sqlalchemy import create_engine, event
 from sqlalchemy.orm import Session
 
 from ..domain.models import Catalog as DomainCatalog
@@ -9,22 +9,14 @@ from .models import Base, Catalog, Course, Enrollment, Student, Subject
 logger = logging.getLogger(__name__)
 
 
-def _entity_label(entity: object) -> str:
-    state = inspect(entity)
-    identity = state.identity or tuple(
-        getattr(entity, column.key) for column in state.mapper.primary_key
-    )
-    return f"{state.mapper.local_table.name}[{', '.join(map(str, identity))}]"
-
-
 @event.listens_for(Base, "after_insert", propagate=True)
 def _log_insert(_mapper: object, _connection: object, entity: object) -> None:
-    logger.info("Created %s", _entity_label(entity))
+    logger.info("Created %s", entity)
 
 
 @event.listens_for(Base, "after_delete", propagate=True)
 def _log_delete(_mapper: object, _connection: object, entity: object) -> None:
-    logger.info("Deleted %s", _entity_label(entity))
+    logger.info("Deleted %s", entity)
 
 
 def to_orm_graph(data: DomainCatalog) -> Catalog:

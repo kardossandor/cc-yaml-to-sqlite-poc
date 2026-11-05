@@ -1,13 +1,18 @@
 from __future__ import annotations
 
-from sqlalchemy import ForeignKey, Integer, String
+from sqlalchemy import ForeignKey, Integer, String, inspect
 from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 
 class Base(DeclarativeBase):
     # Shared declarative base for all database models.
-    pass
+    def __str__(self) -> str:
+        state = inspect(self)
+        identity = state.identity or tuple(
+            getattr(self, column.key) for column in state.mapper.primary_key
+        )
+        return f"{state.mapper.local_table.name}[{', '.join(map(str, identity))}]"
 
 
 class Catalog(Base):
